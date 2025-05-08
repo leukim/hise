@@ -5,16 +5,19 @@
     import Barris from "./Barris.svelte";
     import LayersControl from "./LayersControl.svelte";
 
-    let layers = $state({
-        metro: true,
-        districtes: false,
-        barris: false
-    });
+    import {layers, toggleMetroVisibility} from "./layers.svelte";
+
+    const handleMapClick = (event: any) => {
+        const id = event?.originalEvent?.originalTarget?.id;
+        if (id) {
+            toggleMetroVisibility(id);
+        }
+    };
 </script>
 
 <h1>HISE test</h1>
 
-<LayersControl {layers} />
+<LayersControl />
 
 <div class="container">
     <MapLibre
@@ -22,8 +25,9 @@
             zoom={11}
             class="map"
             style="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
+            onclick={handleMapClick}
     >
-        {#if layers.metro}
+        {#if layers.metro.visible}
             <Metro />
         {/if}
         {#if layers.districtes}
