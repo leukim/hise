@@ -1,15 +1,17 @@
 <script lang="ts">
-    import { GeoJSONSource, LineLayer, MapLibre, Marker, Popup} from "svelte-maplibre-gl";
+    import { GeoJSONSource, LineLayer, MapLibre, Marker, Popup } from "svelte-maplibre-gl";
     import { createGeoJSONCircle } from "$lib/circle";
     import { wgsToCoords} from "$lib/converters";
     import linies_metro from '$lib/data/linies_metro.json';
     import estacions_metro from '$lib/data/estacions_metro.json';
     import accessos_metro from '$lib/data/accessos_metro.json';
     import districtes from "$lib/data/districtes.json";
+    import barris from "$lib/data/barris.json";
 
     let layers = $state({
-        metro: true,
-        districtes: true
+        metro: false,
+        districtes: false,
+        barris: true
     });
 
     let selected_metro_station = $state("");
@@ -25,6 +27,11 @@
 <label>
     <input type="checkbox" bind:checked={layers.districtes}>
     Districtes
+</label>
+
+<label>
+    <input type="checkbox" bind:checked={layers.barris}>
+    Barris
 </label>
 
 <div class="container">
@@ -63,14 +70,21 @@
             {/each}
             {#each linies_metro.features as linia_metro}
                 <GeoJSONSource data={linia_metro.geometry}>
-                    <LineLayer paint={{'line-color': "#" + linia_metro.properties.COLOR_LINIA}} />
+                    <LineLayer paint={{'line-color': "#" + linia_metro.properties.COLOR_LINIA, 'line-width': 3}} />
                 </GeoJSONSource>
             {/each}
         {/if}
         {#if layers.districtes}
             {#each districtes as districte}
                 <GeoJSONSource data={{type:"Polygon", coordinates:wgsToCoords(districte.geometria_wgs84)}}>
-                    <LineLayer paint={{'line-color': 'blue', 'line-opacity': .75}} />
+                    <LineLayer paint={{'line-color': 'blue', 'line-width': 2}} />
+                </GeoJSONSource>
+            {/each}
+        {/if}
+        {#if layers.barris}
+            {#each barris as barri}
+                <GeoJSONSource data={{type:"Polygon", coordinates:wgsToCoords(barri.geometria_wgs84)}}>
+                    <LineLayer paint={{'line-color': 'green'}} />
                 </GeoJSONSource>
             {/each}
         {/if}
